@@ -1,0 +1,28 @@
+name: Production Deployment via Self-Hosted Runner
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Check out Repository Code
+        uses: actions/checkout@v4
+
+      - name: Verify Runner Host Environment
+        run: |
+          echo "Host: $(uname -n)"
+          echo "Kernel: $(uname -r)"
+          uptime
+
+      - name: Deploy Application via Ansible
+        run: |
+          ansible-playbook -i ansible/hosts.ini ansible/update.yml
+
+      - name: Service Health Check
+        run: |
+          curl -f http://127.0.0.1/health || exit 1

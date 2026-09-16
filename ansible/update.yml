@@ -1,0 +1,32 @@
+---
+- name: Automated Web Service & Application Update
+  hosts: webservers
+  become: true
+
+  tasks:
+    - name: Ensure target application directory exists
+      ansible.builtin.file:
+        path: "{{ app_target_dir }}"
+        state: directory
+        owner: www-data
+        group: www-data
+        mode: '0755'
+
+    - name: Synchronize web application source files
+      ansible.builtin.copy:
+        src: ../src/index.php
+        dest: "{{ app_target_dir }}/index.php"
+        owner: www-data
+        group: www-data
+        mode: '0644'
+
+    - name: Validate Web Service Syntax
+      ansible.builtin.command: apachectl configtest
+      register: config_check
+      changed_when: false
+      failed_when: config_check.rc != 0
+
+    - name: Restart Web Service
+      ansible.builtin.service:
+        name: "{{ web_service }}"
+        state: restarted
