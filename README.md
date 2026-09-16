@@ -1,4 +1,3 @@
-# Aazad Nath Tharu
 
 **Infrastructure & Systems Engineer — CI/CD, Automation, Linux Administration**
 
